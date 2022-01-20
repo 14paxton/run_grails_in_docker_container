@@ -1,0 +1,70 @@
+#  web-app:
+#    image: tbcore-docker-run-dev/tbcore:7.23
+#    container_name: core-app
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - db
+#      - redis
+#      - activemq
+#    environment:
+#      -CORE_SERVER_URL: 
+#      -TALENTMINE_SERVER_URL: 
+#      -CORE_DB_HOST_NAME: localhost
+#      -CORE_DB_USER_NAME: 
+#      -CORE_DB_PASSWORD: 
+#      -CORE_DB_NAME:
+  
+  
+#  https://dev:to/natterstefan/docker-tip-how-to-get-host-s-ip-address-inside-a-docker-container-5anh
+#  https://stackoverflow:com/questions/54194104/if-condition-possible-in-yaml-file:
+  #https://megamorf.gitlab.io/2020/09/19/access-native-services-on-docker-host-via-host-docker-internal/
+
+  web-app:
+    domainname:
+    links:
+      - activemq
+      - redis
+      - db
+    container_name: dev-core-docker
+    image: core-docker-run-dev/core:7.23
+    build: 
+      context: .
+      target: development
+    ports:
+      - "18080:18080"
+    environment:
+       - CORE_SERVER_URL=
+       - CORE_DB_HOST_NAME=
+       - CORE_DB_USER_NAME=
+       - CORE_DB_PASSWORD=
+       - CORE_DB_NAME=core
+       - HOST_DOCKER_INTERNAL=host.docker.internal
+       - AWS_REGION=uswest2 
+       - AWS_PROFILE=dev
+       - REDIS_HOST_NAME=dev.talentbank.redis
+       - ACTIVEMQ_HOST_NAME=dev.talentbank.jms
+    volumes:
+      - grails-volume:/root/.m2
+      - grails-volume:/root/.gradle
+      - grails-volume:/root/.grails
+      - ./grails-app:/app/grails-app
+      - ./src:/app/src
+      - ./version.txt:/version.txt
+    networks:
+      - back-tier
+#    entrypoint: [  "grails run-app" ]
+#    command: [ "" ]
+    depends_on:
+      - db
+      - redis
+      - activemq
+      
+volumes:
+    grails-volume:
+      
+networks:
+  back-tier: {}
+
+  #build:
+  #  hostname: dev.talentbank.build
