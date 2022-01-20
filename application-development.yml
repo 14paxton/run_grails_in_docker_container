@@ -1,0 +1,10 @@
+grails:
+  serverURL: "http://${DOCKER_GET_LOCAL_HOST_IP}:18080/am"
+#  serverURL: "{{ ${DOCKER_GET_LOCAL_HOST_IP} if condition else ${CORE_SERVER_URL} }}"
+spring:
+  redis:
+    host: localhost
+    host: "${REDIS_HOST_NAME}"
+    port: 6379
+    timeout: 1800
+brokerURL: "tcp://${ACTIVEMQ_HOST_NAME}:61616?jms.useAsyncSend=true"
